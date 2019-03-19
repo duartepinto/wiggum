@@ -54,7 +54,7 @@ case $key in
     shift # past value
     ;;
   -o|--output)
-    OUTPUT=$2
+    FAILED_OUTPUT=$2
     shift # past argument
     shift # past value
     ;;
