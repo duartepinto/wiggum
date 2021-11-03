@@ -82,14 +82,12 @@ else
 fi
 
 echo Comand: "$COMAND"
-
 ERRORS=0
 for TRIES in {1..9999}
 do
 
 echo "================= Try $TRIES ================="
-sbt "set concurrentRestrictions in Global := Seq(Tags.limit(Tags.Compile, 1), Tags.limit(Tags.Test, 1), Tags.limit(Tags.Publish, 1))" "$COMAND" | tee  $TMP_FILE
-
+sbtn "$COMAND" | tee  $TMP_FILE
 
 ## Previously the verification was done this way to catch colors. Not needed, the color chars are just ignored
 #if perl -pe 's/\x1b\[[0-9;]*m//g' $TMP_FILE | grep -q "\[.*error.*]"; then
@@ -102,5 +100,5 @@ if grep -q "\[.*error.*]" $TMP_FILE; then
 fi
 
 done
-
+sbtn shutdown
 rm -f "$TMP_FILE"
