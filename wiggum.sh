@@ -28,6 +28,7 @@ PROJECT=testOnly
 SPEC="*"
 TEST=
 IT_TEST=false
+USE_COMMAND=false
 
 while [[ $# -gt 0 ]]
 do
@@ -62,6 +63,12 @@ case $key in
     IT_TEST=true
     shift # past argument
     ;;
+  --command)
+    USE_COMMAND=true
+    COMMAND=$2
+    shift # past argument
+    shift # past value
+    ;;
   *)
     echo "ERROR: unknown parameter \"$PARAM\""
     usage
@@ -71,23 +78,26 @@ esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-if $IT_TEST; then
+if $USE_COMMAND; then
+  # do nothing
+  continue
+elif $IT_TEST; then
   if [ "$SPEC" == "*" ]; then
-    COMAND="it:test"
+    COMMAND="it:test"
   else
-    COMAND="it:testOnly $SPEC"
+    COMMAND="it:testOnly $SPEC"
   fi
 else
-  COMAND="$PROJECT $SPEC $TEST"
+  COMMAND="$PROJECT $SPEC $TEST"
 fi
 
-echo Comand: "$COMAND"
+echo Comand: "$COMMAND"
 ERRORS=0
 for TRIES in {1..9999}
 do
 
 echo "================= Try $TRIES ================="
-sbtn "$COMAND" | tee  $TMP_FILE
+sbtn "$COMMAND" | tee  $TMP_FILE
 
 ## Previously the verification was done this way to catch colors. Not needed, the color chars are just ignored
 #if perl -pe 's/\x1b\[[0-9;]*m//g' $TMP_FILE | grep -q "\[.*error.*]"; then
