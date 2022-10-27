@@ -97,7 +97,7 @@ for TRIES in {1..9999}
 do
 
 echo "================= Try $TRIES ================="
-sbtn "$COMMAND" | tee  $TMP_FILE
+sbt --client "$COMMAND" | tee  $TMP_FILE
 
 ## Previously the verification was done this way to catch colors. Not needed, the color chars are just ignored
 #if perl -pe 's/\x1b\[[0-9;]*m//g' $TMP_FILE | grep -q "\[.*error.*]"; then
@@ -110,5 +110,5 @@ if grep -q "\[.*error.*]" $TMP_FILE; then
 fi
 
 done
-sbtn shutdown
+sbt --client shutdown
 rm -f "$TMP_FILE"
