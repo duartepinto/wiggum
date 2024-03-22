@@ -19,6 +19,7 @@ function usage()
     echo -e "\t-p|--project\tSpecify the project to run (-p \"<project_name>\")"
     echo -e "\t-s|--spec\tSpecify the specification to run (-s \"<full_spec_name>\" / -s \"*<spec_name>\" )"
     echo -e "\t-t|--test\tSpecify a single spec2 example to run (-t \"<example_name>\")"
+    echo -e "\t-z|--zio\tRun sbt command appropriate for zio-tests (uses '-- -t \"<example_test_name>\"')"
     echo -e "\t-o|--output\tSpecify the file output where the captured errors will be stored (-t \"<example_name>\")"
     echo -e "\t-h|--help\tShow this"
     echo ""
@@ -27,8 +28,10 @@ function usage()
 PROJECT=testOnly
 SPEC="*"
 TEST=
+TEST_AUX=
 IT_TEST=false
 USE_COMMAND=false
+IS_ZIO=false
 
 while [[ $# -gt 0 ]]
 do
@@ -50,7 +53,7 @@ case $key in
     shift # past value
     ;;
   -t|--test)
-    TEST="-- ex \"$2\""
+    TEST_AUX=$2
     shift # past argument
     shift # past value
     ;;
@@ -58,6 +61,10 @@ case $key in
     FAILED_OUTPUT=$2
     shift # past argument
     shift # past value
+    ;;
+  -z|--zio)
+    IS_ZIO=true
+    shift # past argument
     ;;
   --it-test)
     IT_TEST=true
@@ -77,6 +84,15 @@ case $key in
 esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [ -z "$TEST_AUX"]; then
+  # do nothing
+  :
+elif $IS_ZIO; then
+  TEST="-- -t \"$TEST_AUX\""
+else
+  TEST="-- ex \"$TEST_AUX\""
+fi
 
 if $USE_COMMAND; then
   # do nothing
